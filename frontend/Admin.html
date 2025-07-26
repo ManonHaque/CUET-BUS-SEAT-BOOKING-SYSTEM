@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      background-color: #f3f4f6;
+    }
+
+    .header {
+      background-color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #2563eb;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      background: #fff;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .tab-button {
+      padding: 1rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .tab-button.active {
+      border-bottom: 3px solid #2563eb;
+      color: #2563eb;
+    }
+
+    .section {
+      display: none;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .list-item {
+      background: #162032;
+      color: white;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .list-actions button {
+      margin-left: 0.5rem;
+    }
+
+    /* === Modal Base === */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .modal-content {
+      background-color: white;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      width: 24rem;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    /* === Modal Header === */
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
+    }
+
+    .close-btn:hover {
+      color: #374151;
+    }
+
+    /* === Form Groups === */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: #374151;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* === Form Buttons === */
+    .form-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .btn {
+      background-color: #abc5f0;
+      /* Light blue */
+      color: #0f172a;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-left: 0.5rem;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #c7ddff;
+    }
+
+
+    .btn-primary {
+      background-color: #16a34a;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #15803d;
+    }
+
+    .btn-secondary {
+      background-color: #6b7280;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background-color: #4b5563;
+    }
+
+    /* === Icon === */
+    .icon {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .btn-danger {
+      background-color: #dc2626;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #b91c1c;
+    }
+
+    .header {
+      background-color: white;
+      padding: 0.5rem 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      box-shadow: none;
+    }
+
+    .header-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #2563eb;
+    }
+
+    .header-actions {
+      position: absolute;
+      right: 2rem;
+    }
+
+    .logout-btn {
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .logout-btn:hover {
+      background-color: #dc2626;
+    }
+
+
+    .logout-btn:hover {
+      background-color: #dc2626;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <div class="header-title">Admin Panel</div>
+    <div class="header-actions">
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+
+  <div class="tabs">
+    <div class="tab-button active" data-tab="schedule">Schedule</div>
+    <div class="tab-button" data-tab="bus">Bus</div>
+    <div class="tab-button" data-tab="staff">Staff</div>
+    <div class="tab-button" data-tab="route">Route</div>
+  </div>
+
+  <div id="schedule" class="section active">
+    <div class="action-bar">
+      <h2>Schedules</h2>
+      <div>
+        <button class="btn" id="addScheduleBtn">Add Schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="bus" class="section">
+    <div class="action-bar">
+      <h2>Buses</h2>
+      <div>
+        <button class="btn">Add Bus</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="staff" class="section">
+    <div class="action-bar">
+      <h2>Staff</h2>
+      <div>
+        <button class="btn">Add Staff</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="route" class="section">
+    <div class="action-bar">
+      <h2>Routes</h2>
+      <div>
+        <button class="btn">Add Route</button>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- Add Schedule Modal -->
+  <div id="addScheduleModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Add New Schedule</h2>
+        <button class="close-btn" onclick="closeScheduleModal()">&times;</button>
+      </div>
+      <form id="scheduleForm">
+        <div class="form-group">
+          <label class="form-label">Bus</label>
+          <select class="form-select" id="scheduleBus" required>
+            <option value="">Select Bus</option>
+
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Route</label>
+          <select class="form-select" id="scheduleRoute" required>
+            <option value="">Select Route</option>
+
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Driver</label>
+          <select class="form-select" id="scheduleDriver" required>
+            <option value="">Select Driver</option>
+
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Helper</label>
+          <select class="form-select" id="scheduleHelper" required>
+            <option value="">Select Helper</option>
+
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Departure Time</label>
+          <input type="time" class="form-input" id="scheduleTime" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input type="date" class="form-input" id="scheduleDate" required />
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Add Schedule
+          </button>
+          <button type="button" class="btn btn-danger" onclick="closeScheduleModal()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Add Bus Modal -->
+  <div id="addBusModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="busModalTitle">Add New Bus</h2>
+        <button class="close-btn" onclick="closeBusModal()">&times;</button>
+      </div>
+      <form id="busForm">
+        <div class="form-group">
+          <label class="form-label">Bus Name</label>
+          <input type="text" class="form-input" id="busName" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Number Plate</label>
+          <input type="text" class="form-input" id="busNumber" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bus Type</label>
+          <select class="form-select" id="busType" required>
+            <option value="">Select Type</option>
+            <option value="Mixed">Mixed</option>
+            <option value="Girls Only">Girls Only</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="busSubmitBtn">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span id="busSubmitLabel">Add Bus</span>
+          </button>
+
+          <button type="button" class="btn btn-danger" onclick="closeBusModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Add Staff Modal -->
+  <div id="addStaffModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="staffModalTitle">Add Staff</h2>
+        <button class="close-btn" onclick="closeStaffModal()">&times;</button>
+      </div>
+      <form id="staffForm">
+        <div class="form-group">
+          <label class="form-label">Staff Name</label>
+          <input type="text" class="form-input" id="staffName" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" class="form-input" id="staffPhone" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select class="form-select" id="staffRole" required>
+            <option value="">Select Role</option>
+            <option value="Driver">Driver</option>
+            <option value="Helper">Helper</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Live Location Link</label>
+          <input type="url" class="form-input" id="staffLocation" />
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="staffSubmitBtn">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span id="staffSubmitLabel">Add Staff</span>
+          </button>
+
+          <button type="button" class="btn btn-danger" onclick="closeStaffModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Add Route Modal -->
+  <div id="addRouteModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Add Route</h2>
+        <button class="close-btn" onclick="closeRouteModal()">&times;</button>
+      </div>
+      <form id="routeForm">
+        <div class="form-group">
+          <label class="form-label">Source</label>
+          <input type="text" class="form-input" id="routeSource" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Destination</label>
+          <input type="text" class="form-input" id="routeDestination" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Via</label>
+          <input type="text" class="form-input" id="routeVia" />
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Add Route</span>
+          </button>
+          <button type="button" class="btn btn-danger" onclick="closeRouteModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <script>
+    const tabs = document.querySelectorAll('.tab-button');
+    const sections = document.querySelectorAll('.section');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        sections.forEach(sec => sec.classList.remove('active'));
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    const openScheduleBtn = document.getElementById("addScheduleBtn");
+    const scheduleModal = document.getElementById("addScheduleModal");
+    const scheduleForm = document.getElementById("scheduleForm");
+
+    openScheduleBtn?.addEventListener("click", () => {
+      scheduleModal.classList.remove("hidden");
+      loadDropdownsForSchedule();
+      delete scheduleForm.dataset.editing;
+      document.querySelector('#addScheduleModal .modal-title').textContent = 'Add New Schedule';
+      document.querySelector('#addScheduleModal button[type="submit"]').innerHTML = '✔ Add Schedule';
+    });
+
+
+
+
+    function closeScheduleModal() {
+      scheduleModal.classList.add("hidden");
+      scheduleForm.reset();
+    }
+
+    scheduleForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const data = {
+        bus_id: document.getElementById("scheduleBus").value,
+        route_id: document.getElementById("scheduleRoute").value,
+        driver_id: document.getElementById("scheduleDriver").value,
+        helper_id: document.getElementById("scheduleHelper").value,
+        time: document.getElementById("scheduleTime").value,
+        date: document.getElementById("scheduleDate").value
+      };
+
+
+      const isEditing = scheduleForm.dataset.editing;
+
+      try {
+        let res;
+        if (isEditing) {
+          const id = scheduleList[isEditing].schedule_id;
+          res = await fetch(`http://localhost:5000/api/admin/schedules/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+        } else {
+          res = await fetch('http://localhost:5000/api/admin/schedules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+        }
+
+        const result = await res.json();
+        alert(result.msg);
+        delete scheduleForm.dataset.editing;
+        closeScheduleModal();
+        fetchScheduleList();
+      } catch (err) {
+        console.error('Schedule save failed:', err);
+        alert('Failed to save schedule');
+      }
+    });
+    function formatTime(time) {
+      if (!time) return '';
+      const [hour, minute] = time.split(':');
+      const h = Number(hour);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const formattedHour = h % 12 || 12;
+      return `${formattedHour}:${minute} ${ampm}`;
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+
+      const localDate = new Date(dateStr); // converts to local time
+      const yyyy = localDate.getFullYear();
+      const mm = String(localDate.getMonth() + 1).padStart(2, '0');
+      const dd = String(localDate.getDate()).padStart(2, '0');
+      return `${dd}-${mm}-${yyyy}`;
+    }
+
+
+    let scheduleList = []; // all schedules
+
+    function renderSchedules() {
+      const container = document.getElementById("schedule");
+      const oldItems = container.querySelectorAll(".list-item.dynamic")
+      oldItems.forEach(i => i.remove());
+
+      scheduleList.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "list-item dynamic";
+        div.innerHTML = `
+  <div>
+  Bus: ${item.bus_name} (${item.bus_type}) |
+  Route: ${item.source} - ${item.destination} (via ${item.via}) |
+  Driver: ${item.driver_name} |
+  Helper: ${item.helper_name} |
+  Time: ${formatTime(item.time)} |
+  Date: ${formatDate(item.date)}
+</div>
+
+
+  <div class="list-actions">
+    <button class="btn" onclick="editSchedule(${index})">Edit</button>
+    <button class="btn btn-danger" onclick="deleteSchedule(${index})">Delete</button>
+  </div>
+`;
+
+        container.appendChild(div);
+      });
+    }
+    async function fetchScheduleList() {
+      try {
+        const res = await fetch('http://localhost:5000/api/admin/schedules');
+        const schedules = await res.json();
+        scheduleList = schedules;
+        renderSchedules();
+      } catch (err) {
+        console.error('Error fetching schedules:', err);
+        alert('Could not load schedules');
+      }
+    }
+
+    async function editSchedule(index) {
+      const item = scheduleList[index];
+
+      // ✅ Load dropdowns before setting values
+      await loadDropdownsForSchedule();
+
+      document.getElementById("scheduleBus").value = item.bus_id;
+      document.getElementById("scheduleRoute").value = item.route_id;
+      document.getElementById("scheduleDriver").value = item.driver_id;
+      document.getElementById("scheduleHelper").value = item.helper_id;
+
+      // ✅ Format time and date correctly
+      document.getElementById("scheduleTime").value = item.time?.slice(0, 5) || "";
+      if (item.date) {
+        const d = new Date(item.date);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        document.getElementById("scheduleDate").value = `${yyyy}-${mm}-${dd}`;
+      } else {
+        document.getElementById("scheduleDate").value = "";
+      }
+
+      document.querySelector('#addScheduleModal .modal-title').textContent = 'Edit Schedule';
+      document.querySelector('#addScheduleModal button[type="submit"]').innerHTML = '✔ Update Schedule';
+
+      scheduleForm.dataset.editing = index;
+      scheduleModal.classList.remove("hidden");
+    }
+
+
+
+    async function deleteSchedule(index) {
+      const schedule = scheduleList[index];
+      const confirmed = confirm("Are you sure you want to delete this schedule?");
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/admin/schedules/${schedule.schedule_id}`, {
+          method: 'DELETE'
+        });
+
+        const result = await res.json();
+        alert(result.msg);
+        fetchScheduleList();
+      } catch (err) {
+        console.error('Failed to delete schedule:', err);
+        alert('Delete failed');
+      }
+    }
+
+
+    async function loadDropdownsForSchedule() {
+      // Load Buses
+      const buses = await fetch('http://localhost:5000/api/admin/buses').then(res => res.json());
+      const scheduleBus = document.getElementById('scheduleBus');
+      scheduleBus.innerHTML = '<option value="">Select Bus</option>';
+      buses.forEach(bus => {
+        scheduleBus.innerHTML += `<option value="${bus.bus_id}">${bus.bus_name} (${bus.bus_type})</option>`;
+      });
+
+      // Load Routes
+      const routes = await fetch('http://localhost:5000/api/admin/routes').then(res => res.json());
+      const scheduleRoute = document.getElementById('scheduleRoute');
+      scheduleRoute.innerHTML = '<option value="">Select Route</option>';
+      routes.forEach(route => {
+        scheduleRoute.innerHTML += `<option value="${route.route_id}">${route.source} - ${route.destination} (via ${route.via})</option>`;
+      });
+
+      // Load Staff
+      const staff = await fetch('http://localhost:5000/api/admin/staff').then(res => res.json());
+      const driverSelect = document.getElementById('scheduleDriver');
+      const helperSelect = document.getElementById('scheduleHelper');
+      driverSelect.innerHTML = '<option value="">Select Driver</option>';
+      helperSelect.innerHTML = '<option value="">Select Helper</option>';
+
+      staff.forEach(s => {
+        const option = `<option value="${s.staff_id}">${s.name}</option>`;
+        if (s.staff_role.toLowerCase() === 'driver') driverSelect.innerHTML += option;
+        if (s.staff_role.toLowerCase() === 'helper') helperSelect.innerHTML += option;
+      });
+    }
+    fetchScheduleList();
+
+    const addBusBtn = document.querySelector('#bus .btn:first-child');
+    const busModal = document.getElementById('addBusModal');
+    const busForm = document.getElementById('busForm');
+    const busSection = document.getElementById('bus');
+    let busList = [];
+
+    addBusBtn.addEventListener('click', () => {
+      busForm.reset();
+      delete busForm.dataset.editing;
+      document.getElementById('busModalTitle').textContent = 'Add New Bus';
+      document.getElementById('busSubmitBtn').innerHTML = '✔ Add Bus';
+      busModal.classList.remove('hidden');
+    });
+
+
+
+    function closeBusModal() {
+      busModal.classList.add('hidden');
+      busForm.reset();
+    }
+
+    busForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const data = {
+        bus_name: document.getElementById('busName').value,
+        bus_number: document.getElementById('busNumber').value,
+        bus_type: document.getElementById('busType').value
+      };
+
+      const isEditing = busForm.dataset.editing;
+
+      try {
+        let res;
+        if (isEditing) {
+          const id = busList[isEditing].bus_id;
+          res = await fetch(`http://localhost:5000/api/admin/buses/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+        } else {
+          res = await fetch('http://localhost:5000/api/admin/buses', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+        }
+
+        const result = await res.json();
+        alert(result.msg);
+        closeBusModal();
+        fetchBusList();
+      } catch (err) {
+        console.error('Error saving bus:', err);
+        alert('Failed to save bus');
+      }
+    });
+
+
+
+    function renderBusList() {
+      const oldItems = busSection.querySelectorAll('.list-item.dynamic');
+      oldItems.forEach(el => el.remove());
+
+      busList.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'list-item dynamic';
+        div.innerHTML = `
+        <div>Name: ${item.bus_name} | Number Plate: ${item.bus_number} | Type: ${item.bus_type}</div>
+
+        <div class="list-actions">
+          <button class="btn" onclick="editBus(${index})">Edit</button>
+          <button class="btn btn-danger" onclick="deleteBus(${index})">Delete</button>
+        </div>
+      `;
+        busSection.appendChild(div);
+      });
+    }
+    async function fetchBusList() {
+      try {
+        const res = await fetch('http://localhost:5000/api/admin/buses');
+        const buses = await res.json();
+        busList = buses;
+        renderBusList();
+      } catch (err) {
+        console.error('Fetch buses failed:', err);
+        alert('Could not fetch bus list');
+      }
+    }
+
+    function editBus(index) {
+      const item = busList[index];
+      document.getElementById('busName').value = item.bus_name;
+      document.getElementById('busNumber').value = item.bus_number;
+      document.getElementById('busType').value = item.bus_type;
+      busForm.dataset.editing = index;
+      document.getElementById('busModalTitle').textContent = 'Edit Bus';
+      document.getElementById('busSubmitBtn').innerHTML = '✔ Update Bus';
+      busModal.classList.remove('hidden');
+    }
+
+
+    async function deleteBus(index) {
+      const bus = busList[index];
+      const confirmed = confirm(`Delete bus "${bus.bus_name}"?`);
+
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/admin/buses/${bus.bus_id}`, {
+          method: 'DELETE'
+        });
+
+        const result = await res.json();
+        alert(result.msg);
+        fetchBusList(); // 🔁 reload from DB
+      } catch (err) {
+        console.error('Failed to delete bus:', err);
+        alert('Delete failed');
+      }
+    }
+
+
+    fetchBusList();
+
+    const addStaffBtn = document.querySelector('#staff .btn:first-child');
+    const staffModal = document.getElementById('addStaffModal');
+    const staffForm = document.getElementById('staffForm');
+    const staffSection = document.getElementById('staff');
+    let staffList = [];
+
+    addStaffBtn.addEventListener('click', () => {
+      staffForm.reset();
+      delete staffForm.dataset.editing;
+      document.getElementById('staffModalTitle').textContent = 'Add Staff';
+      document.getElementById('staffSubmitLabel').textContent = 'Add Staff';
+      staffModal.classList.remove('hidden');
+    });
+
+
+    function closeStaffModal() {
+      staffModal.classList.add('hidden');
+      staffForm.reset();
+    }
+
+    staffForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const data = {
+        name: document.getElementById('staffName').value,
+        staff_role: document.getElementById('staffRole').value,
+        location_link: document.getElementById('staffLocation').value,
+        phone_number: document.getElementById('staffPhone').value
+      };
+
+      const isEditing = staffForm.dataset.editing;
+
+      try {
+        let res;
+        if (isEditing) {
+          const id = staffList[isEditing].staff_id;
+          res = await fetch(`http://localhost:5000/api/admin/staff/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+        } else {
+          res = await fetch('http://localhost:5000/api/admin/staff', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+        }
+
+        const result = await res.json();
+        alert(result.msg);
+        delete staffForm.dataset.editing;
+        closeStaffModal();
+        fetchStaffList();
+      } catch (err) {
+        console.error('Error saving staff:', err);
+        alert('Failed to save staff');
+      }
+    });
+
+
+
+    function renderStaffList() {
+      const oldItems = staffSection.querySelectorAll('.list-item.dynamic');
+      oldItems.forEach(el => el.remove());
+
+      staffList.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'list-item dynamic';
+        div.innerHTML = `
+        <div>Name: ${item.name} | Role: ${item.staff_role} | Phone: ${item.phone_number}</div>
+
+
+        <div class="list-actions">
+          <button class="btn" onclick="editStaff(${index})">Edit</button>
+          <button class="btn btn-danger" onclick="deleteStaff(${index})">Delete</button>
+        </div>
+      `;
+        staffSection.appendChild(div);
+      });
+    }
+    async function fetchStaffList() {
+      try {
+        const res = await fetch('http://localhost:5000/api/admin/staff');
+        const staff = await res.json();
+        staffList = staff;
+        renderStaffList();
+      } catch (err) {
+        console.error('Failed to load staff:', err);
+        alert('Could not fetch staff list');
+      }
+    }
+
+    function editStaff(index) {
+      const item = staffList[index];
+      document.getElementById('staffName').value = item.name;
+      document.getElementById('staffPhone').value = item.phone_number; // optional, not stored in DB?
+      document.getElementById('staffRole').value = item.staff_role;
+      document.getElementById('staffLocation').value = item.location_link;
+      staffForm.dataset.editing = index;
+
+      document.getElementById('staffModalTitle').textContent = 'Edit Staff';
+      document.getElementById('staffSubmitLabel').textContent = 'Update Staff';
+
+      staffModal.classList.remove('hidden');
+    }
+
+
+    async function deleteStaff(index) {
+      const staff = staffList[index];
+      const confirmed = confirm(`Delete staff "${staff.name}"?`);
+
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/admin/staff/${staff.staff_id}`, {
+          method: 'DELETE'
+        });
+
+        const result = await res.json();
+        alert(result.msg);
+        fetchStaffList(); // refresh
+      } catch (err) {
+        console.error('Failed to delete staff:', err);
+        alert('Delete failed');
+      }
+    }
+
+
+    fetchStaffList(); // ✅ Load real data from backend
+    // Initialize
+
+    const addRouteBtn = document.querySelector('#route .btn:first-child');
+    const routeModal = document.getElementById('addRouteModal');
+    const routeForm = document.getElementById('routeForm');
+    const routeSection = document.getElementById('route');
+    let routeList = [];
+
+    addRouteBtn.addEventListener('click', () => {
+      routeModal.classList.remove('hidden');
+      routeForm.reset();
+      delete routeForm.dataset.editing;
+      document.querySelector('#addRouteModal .modal-title').textContent = 'Add Route';
+      document.querySelector('#addRouteModal button[type="submit"] span').textContent = 'Add Route';
+    });
+
+
+    function closeRouteModal() {
+      routeModal.classList.add('hidden');
+      routeForm.reset();
+    }
+
+    routeForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const data = {
+        source: document.getElementById('routeSource').value,
+        destination: document.getElementById('routeDestination').value,
+        via: document.getElementById('routeVia').value
+      };
+
+      const isEditing = routeForm.dataset.editing;
+
+      try {
+        let res;
+        if (isEditing) {
+          const id = routeList[isEditing].route_id;
+          res = await fetch(`http://localhost:5000/api/admin/routes/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+        } else {
+          res = await fetch('http://localhost:5000/api/admin/routes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+        }
+
+        const result = await res.json();
+        alert(result.msg);
+        delete routeForm.dataset.editing;
+        closeRouteModal();
+        fetchRouteList();
+      } catch (err) {
+        console.error('Route save failed:', err);
+        alert('Failed to save route');
+      }
+    });
+
+
+
+    function renderRouteList() {
+      const oldItems = routeSection.querySelectorAll('.list-item.dynamic');
+      oldItems.forEach(el => el.remove());
+
+      routeList.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'list-item dynamic';
+        div.innerHTML = `
+        <div>From: ${item.source} | To: ${item.destination} | Via: ${item.via}</div>
+        <div class="list-actions">
+          <button class="btn" onclick="editRoute(${index})">Edit</button>
+          <button class="btn btn-danger" onclick="deleteRoute(${index})">Delete</button>
+        </div>
+      `;
+        routeSection.appendChild(div);
+      });
+    }
+    async function fetchRouteList() {
+      try {
+        const res = await fetch('http://localhost:5000/api/admin/routes');
+        const routes = await res.json();
+        routeList = routes;
+        renderRouteList();
+      } catch (err) {
+        console.error('Failed to load routes:', err);
+        alert('Could not fetch routes');
+      }
+    }
+
+    function editRoute(index) {
+      const item = routeList[index];
+      document.getElementById('routeSource').value = item.source;
+      document.getElementById('routeDestination').value = item.destination;
+      document.getElementById('routeVia').value = item.via || '';
+      routeForm.dataset.editing = index;
+
+      document.querySelector('#addRouteModal .modal-title').textContent = 'Edit Route';
+      document.querySelector('#addRouteModal button[type="submit"] span').textContent = 'Update Route';
+
+      routeModal.classList.remove('hidden');
+    }
+
+
+    async function deleteRoute(index) {
+      const route = routeList[index];
+      const confirmed = confirm(`Delete route from "${route.source}" to "${route.destination}"?`);
+
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/admin/routes/${route.route_id}`, {
+          method: 'DELETE'
+        });
+
+        const result = await res.json();
+        alert(result.msg);
+        fetchRouteList(); // refresh
+      } catch (err) {
+        console.error('Failed to delete route:', err);
+        alert('Delete failed');
+      }
+    }
+
+
+    fetchRouteList(); // load routes from database on page load
+
+    function logout() {
+      // Optional: clear sessionStorage/localStorage if needed
+      // sessionStorage.clear();
+      // RedirrouteForm.adect to login page
+      window.location.href = "Login.html"; // adjust if your login file is different
+    }
+  </script>
+
+</body>
+
+</html>

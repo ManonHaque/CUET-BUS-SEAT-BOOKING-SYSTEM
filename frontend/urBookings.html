@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transport Booking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        .nav {
+            background-color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            font-size: 18px;
+            padding: 10px 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+
+        /* Main Content */
+        .main {
+            padding: 60px 0;
+        }
+.booking-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  padding: 30px;
+}
+        /* Booking Card */
+        .booking-card {
+            width: 300px;
+  background: linear-gradient(145deg, #1f2937, #111827);
+  color: white;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease;
+        }
+.booking-card:hover {
+  transform: translateY(-4px);
+}
+.route-name {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.booking-details {
+  margin-bottom: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: #ddd;
+}
+
+.detail-value {
+  font-weight: 600;
+  color: #fff;
+}
+
+.view-details-btn {
+  display: inline-block;
+  background-color: white;
+  color: #1d4ed8;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.view-details-btn:hover {
+  background-color: #e0e7ff;
+}
+        .booking-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .route-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        .booking-details {
+            margin-bottom: 35px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .detail-label {
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        .detail-value {
+            font-weight: 600;
+        }
+
+        .view-details-btn {
+            background-color: white;
+            color: #1e3a5f;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .view-details-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            background-color: #f8f9fa;
+        }
+
+        .view-details-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 30px;
+                flex-wrap: wrap;
+            }
+
+            .nav-links a {
+                font-size: 16px;
+            }
+
+            .booking-card {
+                margin: 0 20px;
+                padding: 30px 25px;
+            }
+
+            .route-name {
+                font-size: 24px;
+            }
+
+            .detail-row {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links {
+                gap: 20px;
+            }
+
+            .nav-links a {
+                font-size: 14px;
+            }
+
+            .booking-card {
+                padding: 25px 20px;
+            }
+
+            .route-name {
+                font-size: 22px;
+                margin-bottom: 25px;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="container">
+            <ul class="nav-links">
+                <li><a href="Home.html">Home</a></li>
+                <li><a href="#" class="active">Bookings</a></li>
+                <li><a href="History.html">History</a></li>
+                <li><a href="Profile.html">Profile</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main">
+  <div id="schedule-list" class="booking-list">
+  <!-- JS will insert bookings here -->
+</div>
+
+    </main>
+
+    <script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (!user || !user.user_id) return alert("Not logged in");
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/booking/mybookings/${user.user_id}`);
+    const { upcoming } = await res.json();
+    renderBookings(upcoming);
+  } catch (err) {
+    console.error('Error fetching bookings:', err);
+    alert('Could not load bookings');
+  }
+});
+
+
+function renderBookings(bookings) {
+  const list = document.getElementById('schedule-list');
+  list.innerHTML = '';
+
+  if (!bookings || bookings.length === 0) {
+    list.innerHTML = `
+      <div style="
+        background-color: #f0f4f8;
+        color: #444;
+        padding: 30px 20px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 500;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        max-width: 500px;
+        margin: 40px auto;
+      ">
+        📭 You have no upcoming bookings.
+      </div>`;
+    return;
+  }
+
+  bookings.forEach((b, i) => {
+    const card = document.createElement('div');
+    card.className = 'booking-card';
+    card.style.animationDelay = `${i * 0.1}s`;
+
+    card.innerHTML = `
+  <div class="route-name">${b.bus_name}</div>
+  <div class="booking-details">
+    <div class="detail-row">
+      <span class="detail-label">Departure Time:</span>
+      <span class="detail-value">${formatTime(b.time)}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Route:</span>
+      <span class="detail-value">${b.source} → ${b.destination}${b.via ? ` (via ${b.via})` : ''}</span>
+    </div>
+  </div>
+  <a class="view-details-btn" href="viewDetails.html?schedule_id=${b.schedule_id}">View Details</a>
+`;
+
+
+    list.appendChild(card);
+  });
+}
+
+function formatTime(time) {
+  const [h, m] = time.split(':');
+  const hour = parseInt(h, 10);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  return `${(hour % 12) || 12}:${m} ${ampm}`;
+}
+</script>
+
+</body>
+</html>

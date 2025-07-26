@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Seat Booking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 60px;
+            justify-content: center;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: calc(100vh - 100px);
+        }
+
+        .seating-area {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            max-width: 500px;
+            align-self: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+        }
+
+        .available {
+            background-color: #4a7c59;
+        }
+
+        .unavailable {
+            background-color: #bbb;
+        }
+
+        .booked {
+            background-color: #d4af37;
+        }
+
+        .seat-map {
+  display: flex;
+  justify-content: center;
+  gap: 40px; /* space between left and right blocks */
+  margin: 0 auto;
+  flex-wrap: nowrap;
+}
+
+
+        .seat-section {
+  display: grid;
+  gap: 8px;
+}
+
+#left-section {
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 8px;
+  row-gap: 8px;
+  justify-items: center;
+  width: fit-content;
+}
+
+#right-section {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+
+        .seat {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .seat.available {
+            background-color: #4a7c59;
+        }
+
+        .seat.unavailable {
+            background-color: #bbb;
+            cursor: not-allowed;
+        }
+
+        .seat.booked {
+            background-color: #d4af37;
+            cursor: not-allowed;
+        }
+
+        .seat.selected {
+            background-color: #2d5a3d;
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .seat.available:hover:not(.selected) {
+            background-color: #5a8a69;
+            transform: scale(1.05);
+        }
+
+        .seat.your-seat {
+            background-color: #d4af37;
+            /* blue highlight */
+            border: 2px solid white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            cursor: not-allowed;
+        }
+
+
+        .booking-info {
+            background: #1a2332;
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 350px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+            align-self: center;
+        }
+
+        .booking-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .booking-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .booking-label {
+            color: #ccc;
+        }
+
+        .booking-value {
+            font-weight: 500;
+        }
+
+        .selected-seats {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+        }
+
+        .selected-seats h4 {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .seat-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .selected-seat-badge {
+            background-color: #4a7c59;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .booking-status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .booking-status.success {
+            background-color: #2d5a3d;
+            color: white;
+        }
+
+        .confirm-button {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #4a7c59;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .confirm-button:hover {
+            background-color: #5a8a69;
+        }
+
+        .confirm-button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+
+        .edit-button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            background-color: #d4af37;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .edit-button:hover {
+            background-color: #b8941f;
+        }
+
+        .nav {
+            background-color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            font-size: 18px;
+            padding: 10px 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                justify-content: center;
+                align-items: center;
+                gap: 30px;
+                min-height: auto;
+            }
+
+            .booking-info {
+                width: 100%;
+                max-width: 650px;
+            }
+
+            .nav {
+                font-size: 1.1rem;
+                gap: 15px;
+            }
+
+            .nav a {
+                padding: 8px 15px;
+            }
+        }
+
+        .seat.placeholder-seat {
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .booking-value button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.booking-value button:hover {
+  background-color: #0056b3;
+}
+
+    </style>
+</head>
+
+<body>
+    <nav class="nav">
+        <div class="container">
+            <ul class="nav-links">
+                <li><a href="Home.html" class="active">Home</a></li>
+                <li><a href="urBookings.html">Bookings</a></li>
+                <li><a href="History.html">History</a></li>
+                <li><a href="Profile.html">Profile</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="seating-area">
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color available"></div>
+                    <span>Available</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color unavailable"></div>
+                    <span>Unavailable</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color booked"></div>
+                    <span>Booked</span>
+                </div>
+            </div>
+
+            <div class="seat-map">
+                <div class="seat-section" id="left-section">
+
+                </div>
+                <div class="seat-section" id="right-section">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="booking-info">
+            <div class="booking-title" data-role="bus-name">-</div>
+
+
+            <div class="booking-detail" data-role="from">
+                <span class="booking-label">From :</span>
+                <span class="booking-value">CUET</span>
+            </div>
+
+            <div class="booking-detail" data-role="to">
+                <span class="booking-label">To :</span>
+                <span class="booking-value">RAIL-STATION (Fly-Over)</span>
+            </div>
+
+            <div class="booking-detail" data-role="departure">
+                <span class="booking-label">Departure :</span>
+                <span class="booking-value">2 PM</span>
+            </div>
+
+            <div class="booking-detail" data-role="plate">
+                <span class="booking-label">Number-Plate :</span>
+                <span class="booking-value">0XFFFFF</span>
+            </div>
+
+            <div class="booking-detail" data-role="driver-name">
+                <span class="booking-label">Driver Name :</span>
+                <span class="booking-value">-</span>
+            </div>
+
+            <div class="booking-detail" data-role="driver-phone">
+                <span class="booking-label">Driver Phone :</span>
+                <span class="booking-value">-</span>
+            </div>
+
+            <div class="booking-detail" data-role="driver-link">
+                <span class="booking-label">Driver Location :</span>
+                <span class="booking-value">-</span>
+            </div>
+
+            <div class="booking-detail" data-role="helper-name">
+                <span class="booking-label">Helper Name :</span>
+                <span class="booking-value">-</span>
+            </div>
+
+            <div class="booking-detail" data-role="helper-phone">
+                <span class="booking-label">Helper Phone :</span>
+                <span class="booking-value">-</span>
+            </div>
+
+            <div class="booking-detail" data-role="helper-link">
+                <span class="booking-label">Helper Location :</span>
+                <span class="booking-value">-</span>
+            </div>
+
+            <div class="selected-seats">
+                <h4>Selected Seat:</h4>
+                <div class="seat-list" id="selected-seats-list"></div>
+                <button id="confirm-btn" class="confirm-button" style="display: none;">Confirm Booking</button>
+                <button id="edit-btn" class="edit-button" style="display: none;">Edit Booking</button>
+                <div id="booking-status" class="booking-status"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let isEditMode = false;
+        let confirmedSeat = null;
+        let selectedSeat = null; // ✅ this line fixes the error
+
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const scheduleId = urlParams.get('schedule_id');
+
+        async function fetchSeatData(scheduleId) {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const res = await fetch(`http://localhost:5000/api/booking/seats/${scheduleId}?user_id=${user.user_id}`);
+
+                const data = await res.json();
+                if (data.alreadyBooked) {
+                    confirmedSeat = {
+                        r_number: data.bookedSeat.r_number,
+                        column_number: data.bookedSeat.column_number
+                    };
+
+                    document.getElementById('edit-btn').style.display = 'block';
+                    document.getElementById('confirm-btn').style.display = 'none';
+
+                    document.getElementById('booking-status').innerHTML = `
+    <div class="booking-status success">
+      ✅ You have booked seat ${confirmedSeat.r_number}${confirmedSeat.column_number}.
+      <br><small>You can edit your booking below.</small>
+    </div>
+  `;
+                }
+
+
+                renderSeats(data.seats, data.bookedSeat || null);
+
+                renderBusInfo(data.busInfo);
+            } catch (err) {
+                console.error('Error fetching seat data:', err);
+                alert('Could not load seat layout.');
+            }
+        }
+
+        function editBooking() {
+            isEditMode = true;
+            selectedSeat = null;
+
+            document.getElementById('confirm-btn').style.display = 'block';
+            document.getElementById('edit-btn').style.display = 'none';
+
+            document.getElementById('booking-status').innerHTML = `
+    <div class="booking-status" style="background-color:#d4af37; color:white;">
+      Select a new seat to replace your booking.
+    </div>
+  `;
+        }
+
+        function renderSeats(seatsFromDB, bookedSeat = null) {
+  const leftSection = document.getElementById('left-section');
+  const rightSection = document.getElementById('right-section');
+  leftSection.innerHTML = '';
+  rightSection.innerHTML = '';
+
+  const rows = ['A','B','C','D','E','F','G','H','I','J','K'];
+  const cols = [1, 2, 3, 4, 5];
+
+  const seatStatusMap = {};
+  seatsFromDB.forEach(seat => {
+    const key = `${seat.r_number}${seat.column_number}`;
+    seatStatusMap[key] = seat.status;
+  });
+
+  const placeholderSeats = ['A2', 'J1', 'J2', 'A3']; // 👈 Your layout holes
+
+  rows.forEach(r => {
+    cols.forEach(c => {
+      const label = `${r}${c}`;
+      const btn = document.createElement('button');
+      btn.className = 'seat';
+      btn.textContent = label;
+
+      // 👇 Handle placeholder case
+      if (placeholderSeats.includes(label)) {
+        btn.classList.add('placeholder-seat');
+        if (c <= 2) leftSection.appendChild(btn);
+        else rightSection.appendChild(btn);
+        return;
+      }
+
+      const status = seatStatusMap[label] || 'available';
+      const isUserSeat = bookedSeat && bookedSeat.r_number + bookedSeat.column_number === label;
+
+
+      if (isUserSeat) {
+    btn.classList.add('your-seat');
+    btn.disabled = true;
+} else if (status === 'available') {
+    btn.classList.add('available');
+    btn.addEventListener('click', () => selectSeat(btn, label));
+} else if (status === 'unavailable') {
+    btn.classList.add('unavailable');
+    btn.disabled = true;
+} else if (status === 'booked') {
+    btn.classList.add('booked');
+    btn.disabled = true;
+}
+
+
+      if (c <= 2) leftSection.appendChild(btn);
+      else rightSection.appendChild(btn);
+    });
+  });
+}
+
+
+
+        function renderBusInfo(info) {
+  const safeSet = (selector, value) => {
+    const el = document.querySelector(selector);
+    if (el) el.textContent = value || '-';
+  };
+
+  safeSet('[data-role="bus-name"]', info.bus_name);
+  safeSet('[data-role="plate"] .booking-value', info.bus_number);
+  safeSet('[data-role="from"] .booking-value', info.source);
+
+  // ✅ Show destination (via: ...)
+  const destinationText = info.via
+    ? `${info.destination} (via: ${info.via})`
+    : info.destination;
+  safeSet('[data-role="to"] .booking-value', destinationText);
+
+  // ✅ Format time
+  const formattedTime = info.time ? formatTime(info.time) : '-';
+  safeSet('[data-role="departure"] .booking-value', formattedTime);
+
+  // ✅ Driver
+  safeSet('[data-role="driver-name"] .booking-value', info.driver?.name);
+  safeSet('[data-role="driver-phone"] .booking-value', info.driver?.phone);
+
+  const driverLink = document.querySelector('[data-role="driver-link"] .booking-value');
+  if (driverLink && info.driver?.location) {
+    driverLink.innerHTML = `<button onclick="window.open('${info.driver.location}', '_blank')">Live Location</button>`;
+  }
+
+  // ✅ Helper
+  safeSet('[data-role="helper-name"] .booking-value', info.helper?.name);
+  safeSet('[data-role="helper-phone"] .booking-value', info.helper?.phone);
+
+  const helperLink = document.querySelector('[data-role="helper-link"] .booking-value');
+  if (helperLink && info.helper?.location) {
+    helperLink.innerHTML = `<button onclick="window.open('${info.helper.location}', '_blank')">Live Location</button>`;
+  }
+}
+
+
+        function formatTime(time) {
+            const [h, m] = time.split(':');
+            const hour = parseInt(h);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            return `${(hour % 12 || 12)}:${m} ${ampm}`;
+        }
+
+
+
+
+
+
+        function selectSeat(seatElement, seatNumber) {
+
+            if (confirmedSeat && !isEditMode) {
+                return;
+            }
+
+
+            if (selectedSeat && selectedSeat.seatNumber === seatNumber) {
+                selectedSeat.element.classList.remove('selected');
+                selectedSeat = null;
+            } else {
+
+                if (selectedSeat) {
+                    selectedSeat.element.classList.remove('selected');
+                }
+
+
+                seatElement.classList.add('selected');
+                selectedSeat = {
+                    element: seatElement,
+                    seatNumber: seatNumber,
+                    label: seatElement.textContent
+                };
+            }
+
+            updateSelectedSeatsList();
+        }
+
+        function updateSelectedSeatsList() {
+            const seatsList = document.getElementById('selected-seats-list');
+            const confirmBtn = document.getElementById('confirm-btn');
+            const editBtn = document.getElementById('edit-btn');
+            const bookingStatus = document.getElementById('booking-status');
+
+            seatsList.innerHTML = '';
+
+            if (confirmedSeat && !isEditMode) {
+
+                const badge = document.createElement('div');
+                badge.className = 'selected-seat-badge';
+                badge.textContent = `Seat ${confirmedSeat.seatNumber} (Confirmed)`;
+                seatsList.appendChild(badge);
+                confirmBtn.style.display = 'none';
+                editBtn.style.display = 'block';
+                bookingStatus.innerHTML = '<div class="booking-status success">Booking Confirmed! You can edit if needed.</div>';
+            } else if (isEditMode && selectedSeat) {
+
+                const badge = document.createElement('div');
+                badge.className = 'selected-seat-badge';
+                badge.textContent = `Seat ${selectedSeat.seatNumber} (New Selection)`;
+                seatsList.appendChild(badge);
+                confirmBtn.style.display = 'block';
+                confirmBtn.textContent = 'Confirm New Seat';
+                editBtn.style.display = 'none';
+                bookingStatus.innerHTML = '<div class="booking-status" style="background-color: #d4af37; color: white;">Select a new seat and confirm</div>';
+            } else if (isEditMode && !selectedSeat) {
+
+                const badge = document.createElement('div');
+                badge.className = 'selected-seat-badge';
+                badge.textContent = `Current: Seat ${confirmedSeat.seatNumber}`;
+                seatsList.appendChild(badge);
+                confirmBtn.style.display = 'none';
+                editBtn.style.display = 'none';
+                bookingStatus.innerHTML = '<div class="booking-status" style="background-color: #d4af37; color: white;">Select a new available seat</div>';
+            } else if (selectedSeat) {
+
+                const badge = document.createElement('div');
+                badge.className = 'selected-seat-badge';
+                badge.textContent = `Seat ${selectedSeat.seatNumber}`;
+                seatsList.appendChild(badge);
+                confirmBtn.style.display = 'block';
+                confirmBtn.textContent = 'Confirm Booking';
+                editBtn.style.display = 'none';
+                bookingStatus.innerHTML = '';
+            } else {
+
+                seatsList.innerHTML = '<span style="color: #999; font-size: 12px;">No seat selected</span>';
+                confirmBtn.style.display = 'none';
+                editBtn.style.display = 'none';
+                bookingStatus.innerHTML = '';
+            }
+        }
+
+        function confirmBooking() {
+            if (selectedSeat) {
+                if (isEditMode && confirmedSeat) {
+
+
+                    confirmedSeat.element.classList.remove('booked');
+                    confirmedSeat.element.classList.add('available');
+                    confirmedSeat.element.style.cursor = 'pointer';
+
+
+                    const oldSeatNumber = confirmedSeat.seatNumber;
+                    confirmedSeat.element.addEventListener('click', () => selectSeat(confirmedSeat.element, oldSeatNumber));
+                }
+
+
+                confirmedSeat = selectedSeat;
+                confirmedSeat.element.classList.remove('selected');
+                confirmedSeat.element.classList.remove('available');
+                confirmedSeat.element.classList.add('booked');
+
+
+                confirmedSeat.element.removeEventListener('click', selectSeat);
+                confirmedSeat.element.style.cursor = 'not-allowed';
+
+
+                selectedSeat = null;
+                isEditMode = false;
+
+                updateSelectedSeatsList();
+            }
+        }
+
+        function editBooking() {
+            if (confirmedSeat) {
+                isEditMode = true;
+                updateSelectedSeatsList();
+            }
+        }
+        async function confirmBooking() {
+            if (!selectedSeat) return;
+
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user || !user.user_id) {
+                alert('User not logged in');
+                return;
+            }
+
+            const [r_number, column_number] = selectedSeat.label.match(/^([A-Z])(\d+)$/).slice(1, 3);
+
+            const payload = {
+                schedule_id: scheduleId,
+                user_id: user.user_id,
+                r_number,
+                column_number: parseInt(column_number)
+            };
+
+            if (isEditMode && confirmedSeat) {
+                payload.old_r_number = confirmedSeat.r_number;
+                payload.old_column_number = confirmedSeat.column_number;
+            }
+
+            try {
+                const res = await fetch('http://localhost:5000/api/booking/book', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (res.status === 201) {
+                    alert(data.msg);
+                    selectedSeat = null;
+                    isEditMode = false;
+                    confirmedSeat = null;
+                    fetchSeatData(scheduleId); // reload
+                } else {
+                    alert(data.msg || 'Booking failed');
+                }
+            } catch (err) {
+                console.error('Booking error:', err);
+                alert('Something went wrong during booking.');
+            }
+        }
+
+        document.getElementById('confirm-btn').addEventListener('click', confirmBooking);
+
+
+
+        updateSelectedSeatsList();
+
+
+        document.getElementById('confirm-btn').addEventListener('click', confirmBooking);
+        document.getElementById('edit-btn').addEventListener('click', editBooking);
+        fetchSeatData(scheduleId);
+
+    </script>
+</body>
+
+</html>

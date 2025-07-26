@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 95vh;
+        }
+
+        .container #form {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .container #form .input {
+            height: 5vh;
+            width: 20vw;
+            background-color: rgb(0, 25, 55);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .container #form .register {
+            display: flex;
+            justify-content: flex-end;
+
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        .container #form .register a {
+            text-decoration: none;
+            color: rgb(0, 25, 55);
+
+        }
+
+        .container #form .submit {
+            height: 5vh;
+            width: 8vw;
+            margin: 10px auto;
+            background-color: rgb(0, 25, 55);
+            color: white;
+            font-size: 1.2rem;
+            outline: none;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <form action="" id="form">
+            <input class="input" type="text" name="Full Name" id="fullname" placeholder="Full Name">
+            <select name="Sex" id="gender" class="input" required>
+                <option value="" disabled selected hidden>Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="others">Others</option>
+            </select>
+
+            <input class="input" type="text" name="Cuet Mail" id="mail" placeholder="Cuet Mail">
+            <input class="input" type="number" name="Id" id="id" placeholder="Student Id">
+            <input class="input" type="text" name="phone" id="phone" placeholder="Phone Number">
+            <input class="input" type="password" name="password" id="password" placeholder="Password">
+            <input class="input" type="password" name="re-password" id="re-password" placeholder="Re-Password">
+            <div class="register">
+                <a href="Login.html">Login</a>
+            </div>
+            <button type="submit" class="submit">Submit</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('form').addEventListener('submit', async (e) => {
+            e.preventDefault(); // prevent page reload
+
+            const data = {
+                fullname: document.getElementById('fullname').value,
+                mail: document.getElementById('mail').value,
+                password: document.getElementById('password').value,
+                gender: document.getElementById('gender').value,
+                id: document.getElementById('id').value,
+                phone_number: document.getElementById('phone').value
+            };
+
+
+            const response = await fetch('http://localhost:5000/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            console.log(result);
+
+            if (response.ok) {
+                document.body.insertAdjacentHTML('beforeend', `
+<div id="success-popup" style="
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #1f2937;
+    color: #f9fafb;
+    padding: 16px 20px;
+    border-radius: 10px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    z-index: 10000;
+    max-width: 280px;
+    animation: fadeInOut 3s ease forwards;
+  ">
+    <div style="display: flex; align-items: flex-start; gap: 10px;">
+      <div style="font-size: 1.2rem;">✔️</div>
+      <div>
+        <div style="font-weight: 600;">Account created!</div>
+        <div style="font-size: 14px; color: #d1d5db;">Thanks for joining us.</div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(-10px); }
+      10% { opacity: 1; transform: translateY(0); }
+      90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-10px); }
+    }
+  </style>
+`);
+
+                setTimeout(() => {
+                    window.location.href = 'Home.html';
+                }, 1000); // wait 1.5 seconds before redirect
+
+            }
+
+            else {
+                alert(result.msg || 'Signup failed ❌');
+            }
+        });
+    </script>
+</body>
+<script>
+    const mail = document.getElementById("mail")
+
+    mail.addEventListener('input', () => {
+        const email = mail.value.trim();
+
+        const pattern = /^u\d{7}@student\.cuet\.ac\.bd$/;
+
+        if (pattern.test(email)) {
+            mail.style.border = "2px solid green";
+        }
+        else {
+            mail.style.border = "2px solid red";
+        }
+    });
+
+    const studentId = document.getElementById("id");
+
+    studentId.addEventListener('input', () => {
+        const idValue = studentId.value.trim();
+
+        const pattern = /^\d{7}$/;
+
+        if (pattern.test(idValue)) {
+            studentId.style.border = "2px solid green";
+        }
+        else {
+            studentId.style.border = "2px solid red";
+        }
+    });
+    const password = document.getElementById("password");
+    const rePassword = document.getElementById("re-password");
+
+    rePassword.addEventListener('input', () => {
+        if (password.value === rePassword.value) {
+            rePassword.style.border = "2px solid green";
+        } else {
+            rePassword.style.border = "2px solid red";
+        }
+    });
+
+</script>
+
+</html>
