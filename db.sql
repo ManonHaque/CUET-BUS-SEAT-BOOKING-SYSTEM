@@ -74,10 +74,3 @@ CREATE TABLE Booking (
     foreign key(r_number,column_number) references Seat(r_number,column_number)
 );
 
-
-UPDATE user
-SET role = 'admin'
-WHERE user_id = 2104109;
-
-SELECT * FROM schedule;  
-SELECT * FROM seat;  
