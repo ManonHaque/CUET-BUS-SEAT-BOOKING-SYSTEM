@@ -53,6 +53,7 @@ CREATE TABLE Schedule (
     time TIME NOT NULL,
     date DATE NOT NULL,
     route_id INT,
+    bus_id INT,
     driver_id INT, 
     helper_id INT,
     FOREIGN KEY (route_id) REFERENCES Route(route_id),
