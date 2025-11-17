@@ -70,8 +70,9 @@ CREATE TABLE Booking (
     schedule_id INT,
     r_number varchar(5),
     column_number INT,
+    bus_id INT,
     FOREIGN KEY (user_id) REFERENCES User(user_id),
     FOREIGN KEY (schedule_id) REFERENCES Schedule(schedule_id),
-    foreign key(r_number,column_number) references Seat(r_number,column_number)
+    foreign key(r_number,column_number,bus_id) references Seat(r_number,column_number,bus_id)
 );
 
